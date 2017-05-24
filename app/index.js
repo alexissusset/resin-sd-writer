@@ -10,20 +10,24 @@
     const debug = require('debug')('main');
 
     gui.ready();
+    console.log('Starting image download: '+process.env.ETCHER_IMAGE_URL);
     imageDownloader.download(process.env.ETCHER_IMAGE_URL);
 
     imageDownloader.on('start', () => {
         "use strict";
+        console.log('starting image download');
         gui.downloadStart();
     });
 
     imageDownloader.on('error', () => {
         "use strict";
+        console.log('Image download error');
         gui.downloadError();
     });
 
     imageDownloader.on('complete', () => {
         "use strict";
+        console.log('Image download completed');
         gui.downloadComplete();
         const writer = Writer.start('/data/resin.img');
         writer.on('progress', (data) => {
@@ -60,12 +64,16 @@
         "use strict";
         switch (data) {
             case "/dev/sda":
+            	console.log("/dev/sda");
                 return 4;
             case "/dev/sdb":
+            	console.log("/dev/sdb");
                 return 3;
             case "/dev/sdc":
+            	console.log("/dev/sdc");
                 return 2;
             case "/dev/sdd":
+            	console.log("/dev/sdd");
                 return 1;
             default:
                 return 5;
@@ -76,6 +84,7 @@
     let isWriting = function(data) {
         "use strict";
         if (data === "write") {
+	        console.log("writing data");
             return true;
         } else {
             return false;
