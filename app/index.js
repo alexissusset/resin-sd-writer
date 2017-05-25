@@ -9,9 +9,7 @@
     const Writer = require(__dirname + '/libs/writer.js');
     const debug = require('debug')('main');
 
-	var fs = require('fs'),
-		md5 = require('md5'),
-		valid_image;
+	var fs = require('fs');
 
     gui.ready();
     
@@ -113,8 +111,6 @@
 		    }
 		};
     }else{
-	    if(!process.env.ETCHER_IMAGE_URL) console.log('[ERROR] Please set ETCHER_IMAGE_URL to use this application');
-	    if(!process.env.ETCHER_IMAGE_MD5) console.log('[ERROR] Please set ETCHER_IMAGE_MD5 to use this application');
+	    console.log('[ERROR] Please set ETCHER_IMAGE_URL to use this application');
     }
-
 }
