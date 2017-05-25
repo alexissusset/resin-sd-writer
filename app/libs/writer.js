@@ -62,10 +62,16 @@ exports.start = (image) => {
             });
         });
     }).catch((error) => {
-        emitter.emit('error', {
-            device: newDrive.device,
-            error: error
-        });
+		if(typeof newDrive !== 'undefined'){
+        	emitter.emit('error', {
+            	device: newDrive.device,
+            	error: error
+        	});
+        }else{
+        	emitter.emit('error', {
+            	error: error
+        	});
+        }
     });
 
     return emitter;
