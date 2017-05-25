@@ -3,13 +3,17 @@
 {
     const supervisorClient = require(__dirname + '/libs/supervisorClient/supervisorClient.js');
     const imageDownloader = require(__dirname + '/libs/imageDownloader/imageDownloader.js');
-    const guiType = (process.env.GUI_TYPE == null) ? "none" : process.env.GUI_TYPE;
+    const guiType = (process.env.GUI_TYPE === null) ? "none" : process.env.GUI_TYPE;
     const gui = require(__dirname + '/libs/gui/' + guiType + '.js');
     const chalk = require('chalk');
     const Writer = require(__dirname + '/libs/writer.js');
     const debug = require('debug')('main');
 
-	var fs = require('fs');
+	var fs = require('fs'),
+		data_progress_sda,
+		data_progress_sdb,
+		data_progress_sdc,
+		data_progress_sdd;
 
     gui.ready();
     
@@ -54,16 +58,19 @@
 			gui.downloadComplete();
 			const writer = Writer.start('/data/resin.img');
 			writer.on('progress', (data) => {
+				"use strict";
 			    debug(data);
 			    progress(data);
 			});
 			
 			writer.on('done', (data) => {
+				"use strict";
 			    debug(data);
 			    complete(data);
 			});
 			
 			writer.on('error', (error) => {
+				"use strict";
 			    console.error('Error!');
 			    console.error(error);
 			});
@@ -72,7 +79,24 @@
 		let progress = function(data) {
 		    "use strict";
 		    if (isWriting(data.state.type)) {
-			    console.log('Writing to '+data.device+' is '+data.state.percentage+'% complete');
+			    switch(data.device) {
+					case '/dev/sda':
+						if(parseInt(data.state.percentage, 0) !== data_progress_sda) console.log('Writing to '+data.device+' is '+ parseInt(data.state.percentage, 0) +'% complete');
+						data_progress_sda = parseInt(data.state.percentage, 0);
+						break;
+					case '/dev/sdb':
+						if(parseInt(data.state.percentage, 0) !== data_progress_sda) console.log('Writing to '+data.device+' is '+ parseInt(data.state.percentage, 0) +'% complete');
+						data_progress_sda = parseInt(data.state.percentage, 0);
+						break;
+					case '/dev/sdc':
+						if(parseInt(data.state.percentage, 0) !== data_progress_sda) console.log('Writing to '+data.device+' is '+ parseInt(data.state.percentage, 0) +'% complete');
+						data_progress_sda = parseInt(data.state.percentage, 0);
+						break;
+					case '/dev/sdd':
+						if(parseInt(data.state.percentage, 0) !== data_progress_sda) console.log('Writing to '+data.device+' is '+ parseInt(data.state.percentage, 0) +'% complete');
+						data_progress_sda = parseInt(data.state.percentage, 0);
+						break;
+				}
 		        gui.write(identifyDevice(data.device),data.state.percentage);
 		    } else {
 		        gui.verify(identifyDevice(data.device),data.state.percentage);
@@ -81,6 +105,7 @@
 		
 		let complete = function(data) {
 		    "use strict";
+		    console.log('Completed write and check of image on: '+data.device);
 		    gui.done(identifyDevice(data.device));
 		};
 		
@@ -104,7 +129,6 @@
 		let isWriting = function(data) {
 		    "use strict";
 		    if (data === "write") {
-		        console.log("Writing data");
 		        return true;
 		    } else {
 		        return false;
