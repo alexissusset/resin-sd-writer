@@ -46,22 +46,25 @@
 			
 			imageDownloader.on('complete', () => {
 			    "use strict";
-			    console.log('Image download completed');
-			    gui.downloadComplete();
-			    const writer = Writer.start('/data/resin.img');
-			    writer.on('progress', (data) => {
-			        debug(data);
-			        progress(data);
-			    });
-			
-			    writer.on('done', (data) => {
-			        debug(data);
-			        complete(data);
-			    });
-			
-			    writer.on('error', (error) => {
-			        console.error('Error!');
-			        console.error(error);
+			    fs.readFile('/data/resin.img', function(err, buf) {
+					var md5_data_download = md5(buf);
+					console.log('Image download completed with MD5 Checksum: '+md5_data_download);
+					gui.downloadComplete();
+					const writer = Writer.start('/data/resin.img');
+					writer.on('progress', (data) => {
+					    debug(data);
+					    progress(data);
+					});
+					
+					writer.on('done', (data) => {
+					    debug(data);
+					    complete(data);
+					});
+					
+					writer.on('error', (error) => {
+					    console.error('Error!');
+					    console.error(error);
+					});
 			    });
 			});
 		}else{
