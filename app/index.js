@@ -19,11 +19,12 @@
 		// Check if image has already been downloaded and check it against checksum
 		if (fs.existsSync('/data/resin.img')) { 
 			fs.readFile('/data/resin.img', function(err, buf) {
-				if(md5(buf) == process.env.ETCHER_IMAGE_MD5){
+				var md5_data = md5(buf);
+				if(md5_data == process.env.ETCHER_IMAGE_MD5){
 					console.log('Exhisting image has been validated');
 					valid_image = 1;
 				}else{
-					console.log('Exhisting image has failed validation, re-downloading');
+					console.log('Exhisting image has failed validation, '+md5_data+' | '+process.env.ETCHER_IMAGE_MD5+', re-downloading');
 				}
 			});
 		}
