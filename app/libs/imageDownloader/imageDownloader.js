@@ -18,7 +18,7 @@
     imageDownloader.prototype.download = function(url) {
         "use strict";
         let self = this;
-        let destPath = path.basename(url);
+        let destPath = 'resin.img';
         let destFile = fs.createWriteStream('/data/' + destPath);
         request
             .get(url)
