@@ -36,7 +36,7 @@
 			
 			imageDownloader.on('complete', () => {
 			    "use strict";
-				console.log('Image download completed with MD5 Checksum: '+md5_data_download);
+				console.log('Image download completed');
 				gui.downloadComplete();
 				const writer = Writer.start('/data/resin.img');
 				writer.on('progress', (data) => {
