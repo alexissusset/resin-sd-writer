@@ -9,43 +9,78 @@
     const Writer = require(__dirname + '/libs/writer.js');
     const debug = require('debug')('main');
 
+	var fs = require('fs'),
+		md5 = require('md5'),
+		valid_image;
+
     gui.ready();
     
-    if(process.env.ETCHER_IMAGE_URL){
-    	imageDownloader.download(process.env.ETCHER_IMAGE_URL);
+    if(process.env.ETCHER_IMAGE_URL && process.env.ETCHER_IMAGE_MD5){
+		// Check if image has already been downloaded and check it against checksum
+		if (fs.existsSync('/data/resin.img')) { 
+			fs.readFile('/data/resin.img', function(err, buf) {
+				if(md5(buf) == process.env.ETCHER_IMAGE_MD5){
+					console.log('Exhisting image has been validated');
+					valid_image = 1;
+				}else{
+					console.log('Exhisting image has failed validation, re-downloading');
+				}
+			});
+		}
 
-		imageDownloader.on('start', () => {
-		    "use strict";
-			console.log('Starting image download: '+process.env.ETCHER_IMAGE_URL);
-		    gui.downloadStart();
-		});
-		
-		imageDownloader.on('error', () => {
-		    "use strict";
-		    console.log('Image download error');
-		    gui.downloadError();
-		});
-		
-		imageDownloader.on('complete', () => {
-		    "use strict";
-		    console.log('Image download completed');
-		    gui.downloadComplete();
-		    const writer = Writer.start('/data/resin.img');
-		    writer.on('progress', (data) => {
-		        debug(data);
-		        progress(data);
-		    });
-		
-		    writer.on('done', (data) => {
-		        debug(data);
-		        complete(data);
-		    });
-		
-		    writer.on('error', (error) => {
-		        console.error('Error!');
-		        console.error(error);
-		    });
-		});
+		if(!valid_image){
+    		imageDownloader.download(process.env.ETCHER_IMAGE_URL);
+			
+			imageDownloader.on('start', () => {
+			    "use strict";
+				console.log('Starting image download: '+process.env.ETCHER_IMAGE_URL);
+			    gui.downloadStart();
+			});
+			
+			imageDownloader.on('error', () => {
+			    "use strict";
+			    console.log('Image download error');
+			    gui.downloadError();
+			});
+			
+			imageDownloader.on('complete', () => {
+			    "use strict";
+			    console.log('Image download completed');
+			    gui.downloadComplete();
+			    const writer = Writer.start('/data/resin.img');
+			    writer.on('progress', (data) => {
+			        debug(data);
+			        progress(data);
+			    });
+			
+			    writer.on('done', (data) => {
+			        debug(data);
+			        complete(data);
+			    });
+			
+			    writer.on('error', (error) => {
+			        console.error('Error!');
+			        console.error(error);
+			    });
+			});
+		}else{
+			gui.downloadComplete();
+			const writer = Writer.start('/data/resin.img');
+			writer.on('progress', (data) => {
+			    debug(data);
+			    progress(data);
+			});
+			
+			writer.on('done', (data) => {
+			    debug(data);
+			    complete(data);
+			});
+			
+			writer.on('error', (error) => {
+			    console.error('Error!');
+			    console.error(error);
+			});
+		}
 		
 		let progress = function(data) {
 		    "use strict";
@@ -89,7 +124,8 @@
 		    }
 		};
     }else{
-	    console.log('[ERROR] Please set ETCHER_IMAGE_URL to use this application');
+	    if(!process.env.ETCHER_IMAGE_URL) console.log('[ERROR] Please set ETCHER_IMAGE_URL to use this application');
+	    if(!process.env.ETCHER_IMAGE_MD5) console.log('[ERROR] Please set ETCHER_IMAGE_MD5 to use this application');
     }
 
 }
