@@ -15,21 +15,9 @@
 
     gui.ready();
     
-    if(process.env.ETCHER_IMAGE_URL && process.env.ETCHER_IMAGE_MD5){
+    if(process.env.ETCHER_IMAGE_URL){
 		// Check if image has already been downloaded and check it against checksum
-		if (fs.existsSync('/data/resin.img')) { 
-			fs.readFile('/data/resin.img', function(err, buf) {
-				var md5_data = md5(buf);
-				if(md5_data == process.env.ETCHER_IMAGE_MD5){
-					console.log('Exhisting image has been validated');
-					valid_image = 1;
-				}else{
-					console.log('Exhisting image has failed validation, '+md5_data+' | '+process.env.ETCHER_IMAGE_MD5+', re-downloading');
-				}
-			});
-		}
-
-		if(!valid_image){
+		if (!fs.existsSync('/data/resin.img') || (fs.existsSync('/data/resin.img') && process.env.ETCHER_IMAGE_OVERWRITE)) {
     		imageDownloader.download(process.env.ETCHER_IMAGE_URL);
 			
 			imageDownloader.on('start', () => {
@@ -46,26 +34,23 @@
 			
 			imageDownloader.on('complete', () => {
 			    "use strict";
-			    fs.readFile('/data/resin.img', function(err, buf) {
-					var md5_data_download = md5(buf);
-					console.log('Image download completed with MD5 Checksum: '+md5_data_download);
-					gui.downloadComplete();
-					const writer = Writer.start('/data/resin.img');
-					writer.on('progress', (data) => {
-					    debug(data);
-					    progress(data);
-					});
-					
-					writer.on('done', (data) => {
-					    debug(data);
-					    complete(data);
-					});
-					
-					writer.on('error', (error) => {
-					    console.error('Error!');
-					    console.error(error);
-					});
-			    });
+				console.log('Image download completed with MD5 Checksum: '+md5_data_download);
+				gui.downloadComplete();
+				const writer = Writer.start('/data/resin.img');
+				writer.on('progress', (data) => {
+				    debug(data);
+				    progress(data);
+				});
+				
+				writer.on('done', (data) => {
+				    debug(data);
+				    complete(data);
+				});
+				
+				writer.on('error', (error) => {
+				    console.error('Error!');
+				    console.error(error);
+				});
 			});
 		}else{
 			gui.downloadComplete();
