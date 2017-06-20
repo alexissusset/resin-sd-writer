@@ -10,10 +10,7 @@
     const debug = require('debug')('main');
 
 	var fs = require('fs'),
-		data_progress_sda,
-		data_progress_sdb,
-		data_progress_sdc,
-		data_progress_sdd;
+		data_progress = [];
 
     gui.ready();
     
@@ -79,24 +76,7 @@
 		let progress = function(data) {
 		    "use strict";
 		    if (isWriting(data.state.type)) {
-			    switch(data.device) {
-					case '/dev/sda':
-						if(parseInt(data.state.percentage, 0) !== data_progress_sda) console.log('Writing to '+data.device+' is '+ parseInt(data.state.percentage, 0) +'% complete');
-						data_progress_sda = parseInt(data.state.percentage, 0);
-						break;
-					case '/dev/sdb':
-						if(parseInt(data.state.percentage, 0) !== data_progress_sda) console.log('Writing to '+data.device+' is '+ parseInt(data.state.percentage, 0) +'% complete');
-						data_progress_sda = parseInt(data.state.percentage, 0);
-						break;
-					case '/dev/sdc':
-						if(parseInt(data.state.percentage, 0) !== data_progress_sda) console.log('Writing to '+data.device+' is '+ parseInt(data.state.percentage, 0) +'% complete');
-						data_progress_sda = parseInt(data.state.percentage, 0);
-						break;
-					case '/dev/sdd':
-						if(parseInt(data.state.percentage, 0) !== data_progress_sda) console.log('Writing to '+data.device+' is '+ parseInt(data.state.percentage, 0) +'% complete');
-						data_progress_sda = parseInt(data.state.percentage, 0);
-						break;
-				}
+				if(parseInt(data.state.percentage, 0) !== data_progress[data.device]) console.log('Writing to '+data.device+' is '+ parseInt(data.state.percentage, 0) +'% complete');
 		        gui.write(identifyDevice(data.device),data.state.percentage);
 		    } else {
 		        gui.verify(identifyDevice(data.device),data.state.percentage);

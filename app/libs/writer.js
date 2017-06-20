@@ -76,19 +76,3 @@ exports.start = (image) => {
 
     return emitter;
 };
-
-// const x = exports.start('/Users/jviotti/Downloads/Images/coreos_production_iso_image.iso');
-
-// x.on('error', (error) => {
-// console.error('Error!');
-// console.error(error);
-// });
-
-// x.on('progress', (state) => {
-// console.log(state);
-// });
-
-// x.on('done', (results) => {
-// console.log('Done!');
-// console.log(results);
-// });
