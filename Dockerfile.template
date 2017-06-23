@@ -13,7 +13,8 @@ RUN apt-get update && apt-get install -y \
   iw \
   libdbus-1-dev \
   libexpat-dev \
-  rfkill && rm -rf /var/lib/apt/lists/*
+  rfkill && rm -rf /var/lib/apt/lists/* && \
+  find / -name package-lock.json -exec /bin/rm {} \;
 
 # Save source folder
 RUN printf "%s\n" "${PWD##}" > SOURCEFOLDER
