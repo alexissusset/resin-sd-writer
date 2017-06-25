@@ -77,6 +77,7 @@
 		    "use strict";
 		    if (isWriting(data.state.type)) {
 				if(parseInt(data.state.percentage, 0) !== data_progress[data.device]) console.log('Writing to '+data.device+' is '+ parseInt(data.state.percentage, 0) +'% complete');
+				data_progress[data.device] = parseInt(data.state.percentage, 0);
 		        gui.write(identifyDevice(data.device),data.state.percentage);
 		    } else {
 		        gui.verify(identifyDevice(data.device),data.state.percentage);
