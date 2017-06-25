@@ -7,16 +7,22 @@ let WHOLE_DRIVES = [];
 
 const scan = () => {
     "use strict";
-    return drivelist.listAsync().then((drives) => {
-	    catch(error){
-		    console.log('drivelist error');
-		    console.log(error);
-	    }
-        WHOLE_DRIVES = _.cloneDeep(drives);
-        return _.map(_.reject(drives, {
-            system: true
-        }), 'device');
-    });
+	try {
+	    return drivelist.listAsync().then((drives) => {
+	        WHOLE_DRIVES = _.cloneDeep(drives);
+	        return _.map(_.reject(drives, {
+	            system: true
+	        }), 'device');
+	    });
+	}
+	catch(error){
+	    console.log('drivelist error');
+	    console.log(error);
+	    return;
+	}
+	finally {
+	    return;
+	}
 };
 
 exports.poll = (callback) => {
