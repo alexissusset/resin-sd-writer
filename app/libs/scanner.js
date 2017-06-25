@@ -27,24 +27,33 @@ const scan = () => {
 
 exports.poll = (callback) => {
     "use strict";
-    return scan().then((drives) => {
-        const newDrives = _.difference(drives, CURRENT_DRIVES);
-        if (!_.isEmpty(newDrives)) {
-            _.each(newDrives, (drive) => {
-                callback({
-                    device: drive,
-                    size: _.find(WHOLE_DRIVES, {
-                        device: drive
-                    }).size
-                });
-            });
-        }
-        CURRENT_DRIVES = drives;
-
-        return new Bluebird((resolve, reject) => {
-            setTimeout(() => {
-                return exports.poll(callback).then(resolve).catch(reject);
-            }, 2000);
-        });
-    });
+	try {
+    	return scan().then((drives) => {
+    	    const newDrives = _.difference(drives, CURRENT_DRIVES);
+    	    if (!_.isEmpty(newDrives)) {
+    	        _.each(newDrives, (drive) => {
+    	            callback({
+    	                device: drive,
+    	                size: _.find(WHOLE_DRIVES, {
+    	                    device: drive
+    	                }).size
+    	            });
+    	        });
+    	    }
+    	    CURRENT_DRIVES = drives;
+		
+    	    return new Bluebird((resolve, reject) => {
+    	        setTimeout(() => {
+    	            return exports.poll(callback).then(resolve).catch(reject);
+    	        }, 2000);
+    	    });
+    	});
+	catch(error){
+	    console.log('drivelist error');
+	    console.log(error);
+	    return;
+	}
+	finally {
+	    return;
+	}  
 };
