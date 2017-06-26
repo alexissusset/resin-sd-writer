@@ -46,6 +46,12 @@
         "strict": true
     },
     "dependencies": {
+        "figlet": "^1.2.0",
+        "mqtt": "^2.2.1",
+        "requestretry": "^1.12.0",
+        "rpi-info": "^1.0.3",
+        "pi-pins": "^1.0.2",
+        "os-utils": "0.0.14",
         "bluebird": "^3.4.6",
         "body-parser": "^1.15.2",
         "bower": "^1.7.9",
