@@ -46,6 +46,7 @@
         "strict": true
     },
     "dependencies": {
+        "drivelist": "^4.0.0",
         "figlet": "*",
         "mqtt": "*",
         "requestretry": "*",
@@ -60,7 +61,6 @@
         "dbus": "*",
         "debug": "*",
         "download": "*",
-        "drivelist": "^4.0.0",
         "etcher-image-write": "*",
         "express": "*",
         "i2c": "*",
