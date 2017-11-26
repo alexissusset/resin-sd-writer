@@ -3,8 +3,8 @@
 {
     const supervisorClient = require(__dirname + '/libs/supervisorClient/supervisorClient.js');
     const imageDownloader = require(__dirname + '/libs/imageDownloader/imageDownloader.js');
-    const guiType = (process.env.GUI_TYPE === null) ? "none" : process.env.GUI_TYPE;
-    const gui = require(__dirname + '/libs/gui/' + guiType + '.js');
+    const guiType = "none";
+    const gui = require(__dirname + '/libs/gui/none.js');
     const chalk = require('chalk');
     const Writer = require(__dirname + '/libs/writer.js');
     const debug = require('debug')('main');
