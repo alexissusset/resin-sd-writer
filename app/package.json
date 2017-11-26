@@ -60,7 +60,7 @@
         "dbus": "*",
         "debug": "*",
         "download": "*",
-        "drivelist": "*",
+        "drivelist": "^4.0.0",
         "etcher-image-write": "*",
         "express": "*",
         "i2c": "*",
