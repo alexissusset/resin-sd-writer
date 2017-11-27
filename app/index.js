@@ -11,7 +11,11 @@ function bytesToSize(bytes) {
    var sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
    if (bytes == 0) return '0 Byte';
    var i = parseInt(Math.floor(Math.log(bytes) / Math.log(1024)));
-   return Math.round(bytes / Math.pow(1024, i), 2) + ' ' + sizes[i];
+   if(sizes[i] == 'GB'){
+   	return Math.round(bytes / Math.pow(1024, i), 2).toFixed(1) + ' ' + sizes[i];
+   }else{
+	return Math.round(bytes / Math.pow(1024, i), 2) + ' ' + sizes[i];   
+   }
 }
 
 function image_md5(message){
@@ -31,6 +35,10 @@ function image_md5(message){
 					download(process.env.ETCHER_IMAGE_URL, '/data/resin.img', image_md5);	  
 				}else{
 					console.log('Too many download retries, stopping here');
+					// Wait forever
+					setInterval(() => {
+						console.log('Plesae fix ETCHER_IMAGE_MD5 variable or image download location before restarting your pi');
+					}, 50000);
 				}
 		  }
 		});
@@ -41,6 +49,10 @@ function image_md5(message){
 			download(process.env.ETCHER_IMAGE_URL, '/data/resin.img', image_md5);	  
 		}else{
 			console.log('Too many download retries, stopping here');
+			// Wait forever
+			setInterval(() => {
+				console.log('Plesae fix ETCHER_IMAGE_MD5 variable or image download location before restarting your pi');
+			}, 50000);
 		}
 	}
 }
