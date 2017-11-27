@@ -49,8 +49,6 @@
         "os-utils": "*",
         "bluebird": "*",
         "body-parser": "*",
-        "bower": "*",
-        "coffee-script": "*",
         "dbus": "*",
         "download": "*",
         "drivelist": "^4.0.0",
