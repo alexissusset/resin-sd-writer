@@ -26,7 +26,7 @@ function image_md5(message){
 				// Download completed and validted, starting SD Writer software
 				start_sd_writer(1);
 		  }else{
-			  console.log('Invalid MD5 checksum, re-downloading image');
+			  console.log('Invalid MD5 checksum: '+ hash +', re-downloading image');
 			  download(process.env.ETCHER_IMAGE_URL, '/data/resin.img.gz', image_md5);
 		  }
 		});
@@ -37,8 +37,61 @@ function image_md5(message){
 }
 
 function start_sd_writer(){
-	// Download completed and validted, starting SD Writer software
-	console.log('SD Wirter');
+	"use strict";
+	const writer = Writer.start('/data/resin.img.gz');
+	writer.on('progress', (data) => {
+	    debug(data);
+	    progress(data);
+	});
+	
+	writer.on('done', (data) => {
+	    debug(data);
+	    complete(data);
+	});
+	
+	writer.on('error', (error) => {
+	    console.error('Error!');
+	    console.error(error);
+	});
+	
+	let progress = function(data) {
+	    "use strict";
+	    if (isWriting(data.state.type)) {
+			if(parseInt(data.state.percentage, 0) !== data_progress[data.device]) console.log('Writing to '+data.device+' is '+ parseInt(data.state.percentage, 0) +'% complete');
+			data_progress[data.device] = parseInt(data.state.percentage, 0);
+	    }
+	};
+	
+	let complete = function(data) {
+	    "use strict";
+	    console.log('Completed write and check of image on: '+data.device);
+	};
+	
+	let identifyDevice = function(data) {
+	    "use strict";
+	    switch (data) {
+	        case "/dev/sda":
+	            return 4;
+	        case "/dev/sdb":
+	            return 3;
+	        case "/dev/sdc":
+	            return 2;
+	        case "/dev/sdd":
+	            return 1;
+	        default:
+	            return 5;
+	
+	    }
+	};
+	
+	let isWriting = function(data) {
+	    "use strict";
+	    if (data === "write") {
+	        return true;
+	    } else {
+	        return false;
+	    }
+	}
 }
 
 function download(fileUrl, apiPath, callback) {
