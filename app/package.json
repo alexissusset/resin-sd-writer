@@ -46,7 +46,6 @@
         "strict": true
     },
     "dependencies": {
-	    "wiring-pi": "*",
         "os-utils": "*",
         "bluebird": "*",
         "body-parser": "*",
@@ -61,8 +60,7 @@
         "express": "*",
         "i2c": "*",
         "lodash": "*",
-        "request": "*",
         "umount": "*",
-        "md5": "*"
+        "md5-file": "*"
     }
 }
