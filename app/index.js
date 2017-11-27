@@ -29,7 +29,7 @@ function image_md5(message){
 				// Download completed and validted, starting SD Writer software
 				start_sd_writer(1);
 		  }else{
-				console.log('Invalid MD5 checksum: '+ hash +', re-downloading image');
+				console.log('Invalid MD5 checksum: '+ hash +' re-downloading image');
 				if(!download_retry){
 					download_retry = 1;
 					download(process.env.ETCHER_IMAGE_URL, '/data/resin.img', image_md5);	  
