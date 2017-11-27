@@ -4,7 +4,6 @@ var fs = require('fs'),
 	url = require('url'),
 	https = require('https'),
 	md5File = require('md5-file'),
-	deflate = require('deflate'),
 	data_progress = [],
 	download_retry;
 
