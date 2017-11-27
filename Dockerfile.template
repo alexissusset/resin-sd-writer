@@ -3,19 +3,7 @@ FROM resin/%%RESIN_MACHINE_NAME%%-node:6-slim
 # Install apt deps
 RUN apt-get update && apt-get install -y \
   build-essential \
-  dropbear \
-  mosquitto-clients \
-  git \
-  wget \
-  python-dev \
-  i2c-tools \
-  dnsmasq \
-  hostapd \
-  iproute2 \
-  iw \
-  libdbus-1-dev \
-  libexpat-dev \
-  rfkill && rm -rf /var/lib/apt/lists/* && \
+  dropbear && rm -rf /var/lib/apt/lists/* && \
   find / -name package-lock.json -exec /bin/rm {} \;
 
 # Save source folder
@@ -37,6 +25,3 @@ COPY "$SOURCEFOLDER/app" ./
 
 # Start app
 CMD ["bash", "/usr/src/app/start.sh"]
-
-## uncomment if you want systemd
-ENV INITSYSTEM on
