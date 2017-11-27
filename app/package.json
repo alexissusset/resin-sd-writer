@@ -46,15 +46,9 @@
         "strict": true
     },
     "dependencies": {
-        "os-utils": "*",
         "bluebird": "*",
-        "body-parser": "*",
-        "dbus": "*",
-        "download": "*",
         "drivelist": "^4.0.0",
         "etcher-image-write": "*",
-        "express": "*",
-        "i2c": "*",
         "lodash": "*",
         "umount": "*",
         "md5-file": "*"
