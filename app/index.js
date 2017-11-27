@@ -6,8 +6,9 @@ var fs = require('fs'),
 	url = require('url'),
 	https = require('https'),
 	md5File = require('md5-file'),
-	zlib = require('zlib'),
-	data_progress = [];
+	deflate = require('deflate'),
+	data_progress = [],
+	download_retry;
 
 function bytesToSize(bytes) {
    var sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
@@ -27,19 +28,29 @@ function image_md5(message){
 				// Download completed and validted, starting SD Writer software
 				start_sd_writer(1);
 		  }else{
-			  console.log('Invalid MD5 checksum: '+ hash +', re-downloading image');
-			  download(process.env.ETCHER_IMAGE_URL, '/data/resin.img.gz', image_md5);
+				console.log('Invalid MD5 checksum: '+ hash +', re-downloading image');
+				if(!download_retry){
+					download_retry = 1;
+					download(process.env.ETCHER_IMAGE_URL, '/data/resin.img.gz', image_md5);	  
+				}else{
+					console.log('Too many download retries, stopping here');
+				}
 		  }
 		});
 	}else if(message){
 		console.log('Download failed with error: '+ message +", restarting");
-		download(process.env.ETCHER_IMAGE_URL, '/data/resin.img.gz', image_md5);
+		if(!download_retry){
+			download_retry = 1;
+			download(process.env.ETCHER_IMAGE_URL, '/data/resin.img.gz', image_md5);	  
+		}else{
+			console.log('Too many download retries, stopping here');
+		}
 	}
 }
 
 function start_sd_writer(){
 	"use strict";
-	const writer = Writer.start(zlib.deflate(fs.createReadStream('/data/resin.img.gz')));
+	const writer = Writer.start('/data/resin.img.gz');
 	writer.on('progress', (data) => {
 	    debug(data);
 	    progress(data);

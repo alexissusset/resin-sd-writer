@@ -21,6 +21,7 @@ exports.start = (image) => {
                 stream: fs.createReadStream(image),
                 size: fs.statSync(image).size
             }, {
+	            transform, true,
                 check: true
             });
 
