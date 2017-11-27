@@ -3,6 +3,7 @@ FROM resin/%%RESIN_MACHINE_NAME%%-node:6-slim
 # Install apt deps
 RUN apt-get update && apt-get install -y \
   build-essential \
+  python \
   dropbear && rm -rf /var/lib/apt/lists/* && \
   find / -name package-lock.json -exec /bin/rm {} \;
 
