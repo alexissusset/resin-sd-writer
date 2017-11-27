@@ -14,16 +14,16 @@ exports.start = (image) => {
         return umount.umountAsync(newDrive.device).then(() => {
             console.log(`Unmounted successfully ${newDrive.device}`);
             const writer = imageWrite.write({
-                fd: fs.openSync(newDrive.device, 'rs+'),
-                device: newDrive.device,
-                size: newDrive.size
-            }, {
-                stream: fs.createReadStream(image),
-                size: fs.statSync(image).size
-            }, {
-	            transform: true,
-                check: true
-            });
+                	fd: fs.openSync(newDrive.device, 'rs+'),
+					device: newDrive.device,
+					size: newDrive.size
+            	}, {
+                	stream: fs.createReadStream(image),
+					size: fs.statSync(image).size
+            	}, {
+	            //	transform: true,
+					check: true
+            	});
 
             writer.on('progress', function(state) {
                 emitter.emit('progress', {
