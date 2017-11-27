@@ -12,7 +12,7 @@ function bytesToSize(bytes) {
    if (bytes == 0) return '0 Byte';
    var i = parseInt(Math.floor(Math.log(bytes) / Math.log(1024)));
    if(sizes[i] == 'GB'){
-   	return Math.round(bytes / Math.pow(1024, i), 2).toFixed(1) + ' ' + sizes[i];
+   	return Math.round(bytes * 100 / Math.pow(1024, i), 2) / 100 + ' ' + sizes[i];
    }else{
 	return Math.round(bytes / Math.pow(1024, i), 2) + ' ' + sizes[i];   
    }
