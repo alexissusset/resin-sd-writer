@@ -12,6 +12,58 @@
 		curl = require('download'),
 		data_progress = [];
 
+function download(fileUrl, apiPath, callback) {
+    var url = require('url'),
+        http = require('http'),
+        p = url.parse(fileUrl),           
+        timeout = 10000; 
+    
+    var file = fs.createWriteStream(apiPath);
+    
+    var timeout_wrapper = function( req ) {
+        return function() {
+            console.log('abort');
+            req.abort();
+            callback("File transfer timeout!");
+        };
+    };
+    
+ 
+    console.log('before');
+
+    var request = http.get(fileUrl).on('response', function(res) { 
+        console.log('in cb');           
+        var len = parseInt(response.headers['content-length'], 10);
+        var downloaded = 0;
+        
+        res.on('data', function(chunk) {
+            file.write(chunk);
+            downloaded += chunk.length;
+            process.stdout.write("Downloading " + (100.0 * downloaded / len).toFixed(2) + "% " + downloaded + " bytes" + isWin ? "\033[0G": "\r");
+            // reset timeout
+            clearTimeout( timeoutId );
+            timeoutId = setTimeout( fn, timeout );
+        }).on('end', function () {
+            // clear timeout
+            clearTimeout( timeoutId );
+            file.end();
+            console.log(file_name + ' downloaded to: ' + apiPath);
+            callback(null);
+        }).on('error', function (err) {
+            // clear timeout
+            clearTimeout( timeoutId );                
+            callback(err.message);
+        });           
+    });
+    
+    // generate timeout handler
+    var fn = timeout_wrapper( request );
+
+    // set initial timeout
+    var timeoutId = setTimeout( fn, timeout );
+}
+
+
 	function start_sd_writer() {
 			"use strict";
 			const writer = Writer.start('/data/resin.img');
@@ -80,33 +132,7 @@
     if(process.env.ETCHER_IMAGE_URL){
 		// Check if image has already been downloaded and check it against checksum
 		if (!fs.existsSync('/data/resin.img') || (fs.existsSync('/data/resin.img') && process.env.ETCHER_IMAGE_OVERWRITE)){
-			var imageDownloader = new curl(
-				process.env.ETCHER_IMAGE_URL,
-				'/data/resin.img'
-			);
-			
-			imageDownloader.on('progress', (progress) => {
-				"use strict";
-				console.log($progress + "%");
-				return;
-			});
-			
-			imageDownloader.on('end', (code) => {
-				"use strict";
-				if(code == 0) {
-					console.log('Image download completed, starting image downloader');
-					gui.downloadComplete();
-					start_sd_writer();
-				}else{
-					console.log('Image download error');
-					gui.downloadError();
-				}
-			});
-			
-			// start download
-			console.log('Starting image download: '+process.env.ETCHER_IMAGE_URL);
-			gui.downloadStart();
-			imageDownloader.start();
+			download(process.env.ETCHER_IMAGE_OVERWRITE, '/data/resin.img', start_sd_writer);
 		}else{
 			start_sd_writer();
 		}
