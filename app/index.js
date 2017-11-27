@@ -1,6 +1,4 @@
-const chalk = require('chalk');
 const Writer = require(__dirname + '/libs/writer.js');
-const debug = require('debug')('main');
 
 var fs = require('fs'),
 	url = require('url'),
@@ -52,12 +50,10 @@ function start_sd_writer(){
 	"use strict";
 	const writer = Writer.start('/data/resin.img.gz');
 	writer.on('progress', (data) => {
-	    debug(data);
 	    progress(data);
 	});
 	
 	writer.on('done', (data) => {
-	    debug(data);
 	    complete(data);
 	});
 	
