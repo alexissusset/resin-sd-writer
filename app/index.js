@@ -6,6 +6,7 @@ var fs = require('fs'),
 	url = require('url'),
 	https = require('https'),
 	md5File = require('md5-file'),
+	zlib = require('zlib'),
 	data_progress = [];
 
 function bytesToSize(bytes) {
@@ -19,7 +20,7 @@ function image_md5(message){
 	if(message == 1){
 		console.log('Starting OS image MD5 checksum');
 		// Check downloaded image MD5 against configuration
-		md5File('/data/resin.img', (err, hash) => {
+		md5File('/data/resin.img.gz', (err, hash) => {
 			if(err) throw err
 			if(hash == process.env.ETCHER_IMAGE_MD5){
 				console.log('MD5 checksum verified successfully, start SD Writer software');
@@ -27,18 +28,18 @@ function image_md5(message){
 				start_sd_writer(1);
 		  }else{
 			  console.log('Invalid MD5 checksum: '+ hash +', re-downloading image');
-			  download(process.env.ETCHER_IMAGE_URL, '/data/resin.img', image_md5);
+			  download(process.env.ETCHER_IMAGE_URL, '/data/resin.img.gz', image_md5);
 		  }
 		});
 	}else if(message){
 		console.log('Download failed with error: '+ message +", restarting");
-		download(process.env.ETCHER_IMAGE_URL, '/data/resin.img', image_md5);
+		download(process.env.ETCHER_IMAGE_URL, '/data/resin.img.gz', image_md5);
 	}
 }
 
 function start_sd_writer(){
 	"use strict";
-	const writer = Writer.start('/data/resin.img');
+	const writer = Writer.start(zlib.deflate(fs.createReadStream('/data/resin.img.gz')));
 	writer.on('progress', (data) => {
 	    debug(data);
 	    progress(data);
@@ -149,8 +150,8 @@ function download(fileUrl, apiPath, callback) {
 
 if(process.env.ETCHER_IMAGE_URL && process.env.ETCHER_IMAGE_MD5){
 	// Check if image has already been downloaded and check it against checksum
-	if (!fs.existsSync('/data/resin.img') || (fs.existsSync('/data/resin.img') && process.env.ETCHER_IMAGE_OVERWRITE)){
-		download(process.env.ETCHER_IMAGE_URL, '/data/resin.img', image_md5);
+	if (!fs.existsSync('/data/resin.img.gz') || (fs.existsSync('/data/resin.img.gz') && process.env.ETCHER_IMAGE_OVERWRITE)){
+		download(process.env.ETCHER_IMAGE_URL, '/data/resin.img.gz', image_md5);
 	}else{
 		image_md5(1);
 	}
