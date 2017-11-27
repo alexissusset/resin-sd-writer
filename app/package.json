@@ -63,6 +63,7 @@
         "lodash": "*",
         "request": "*",
         "umount": "*",
-        "md5": "*"
+        "md5": "*",
+        "curl-download": "*"
     }
 }

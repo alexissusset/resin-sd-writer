@@ -1,5 +1,4 @@
 #!/bin/env node
-
 {
     const supervisorClient = require(__dirname + '/libs/supervisorClient/supervisorClient.js');
     const imageDownloader = require(__dirname + '/libs/imageDownloader/imageDownloader.js');
@@ -10,64 +9,23 @@
     const debug = require('debug')('main');
 
 	var fs = require('fs'),
+		curl = require('download'),
 		data_progress = [];
 
-    gui.ready();
-    
-    if(process.env.ETCHER_IMAGE_URL){
-		// Check if image has already been downloaded and check it against checksum
-		if (!fs.existsSync('/data/resin.img') || (fs.existsSync('/data/resin.img') && process.env.ETCHER_IMAGE_OVERWRITE)) {
-    		imageDownloader.download(process.env.ETCHER_IMAGE_URL);
-			
-			imageDownloader.on('start', () => {
-			    "use strict";
-				console.log('Starting image download: '+process.env.ETCHER_IMAGE_URL);
-			    gui.downloadStart();
-			});
-			
-			imageDownloader.on('error', () => {
-			    "use strict";
-			    console.log('Image download error');
-			    gui.downloadError();
-			});
-			
-			imageDownloader.on('complete', () => {
-			    "use strict";
-				console.log('Image download completed');
-				gui.downloadComplete();
-				const writer = Writer.start('/data/resin.img');
-				writer.on('progress', (data) => {
-				    debug(data);
-				    progress(data);
-				});
-				
-				writer.on('done', (data) => {
-				    debug(data);
-				    complete(data);
-				});
-				
-				writer.on('error', (error) => {
-				    console.error('Error!');
-				    console.error(error);
-				});
-			});
-		}else{
-			gui.downloadComplete();
+	function start_sd_writer() {
+			"use strict";
 			const writer = Writer.start('/data/resin.img');
 			writer.on('progress', (data) => {
-				"use strict";
 			    debug(data);
 			    progress(data);
 			});
 			
 			writer.on('done', (data) => {
-				"use strict";
 			    debug(data);
 			    complete(data);
 			});
 			
 			writer.on('error', (error) => {
-				"use strict";
 			    console.error('Error!');
 			    console.error(error);
 			});
@@ -115,7 +73,43 @@
 		        return false;
 		    }
 		};
+	}
+
+    gui.ready();
+    
+    if(process.env.ETCHER_IMAGE_URL){
+		// Check if image has already been downloaded and check it against checksum
+		if (!fs.existsSync('/data/resin.img') || (fs.existsSync('/data/resin.img') && process.env.ETCHER_IMAGE_OVERWRITE)){
+			var imageDownloader = new curl(
+				process.env.ETCHER_IMAGE_URL,
+				'/data/resin.img'
+			);
+			
+			imageDownloader.on('progress', (progress) => {
+				"use strict";
+				console.log($progress + "%");
+				return;
+			});
+			
+			imageDownloader.on('end', (code) => {
+				"use strict";
+				if(code == 0) {
+					console.log('Image download completed, starting image downloader');
+					gui.downloadComplete();
+					start_sd_writer();
+				}else{
+					console.log('Image download error');
+					gui.downloadError();
+				}
+			});
+			
+			// start download
+			console.log('Starting image download: '+process.env.ETCHER_IMAGE_URL);
+			gui.downloadStart();
+			imageDownloader.start();
+		}else{
+			start_sd_writer();
+		}
     }else{
 	    console.log('[ERROR] Please set ETCHER_IMAGE_URL to use this application');
     }
-}
